@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Hifz Companion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --paper:#F3EEE1;
+  --paper-2:#EAE2CE;
+  --ink:#1B2A38;
+  --ink-soft:#4B5A68;
+  --gold:#AD8A44;
+  --gold-soft:#D9C48C;
+  --emerald:#1F5F4D;
+  --emerald-soft:#DCEAE3;
+  --rubric:#8C3A3A;
+  --rubric-soft:#F1DCDA;
+  --line:#D8CDB0;
+  --card:#FBF8F0;
+  --shadow: 0 10px 30px rgba(27,42,56,0.10);
+  --radius: 18px;
+}
+[data-theme="dark"]{
+  --paper:#101A22;
+  --paper-2:#16232D;
+  --ink:#EDE6D6;
+  --ink-soft:#A9B4BC;
+  --gold:#D9C48C;
+  --gold-soft:#8A7238;
+  --emerald:#4FA98A;
+  --emerald-soft:#173229;
+  --rubric:#D98787;
+  --rubric-soft:#3A2020;
+  --line:#2A3A45;
+  --card:#152029;
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+html,body{margin:0; padding:0; height:100%;}
+body{
+  background: var(--paper-2);
+  font-family:'Inter', sans-serif;
+  color: var(--ink);
+  display:flex;
+  justify-content:center;
+  min-height:100vh;
+}
+.app-frame{
+  width:100%;
+  max-width:460px;
+  min-height:100vh;
+  background: var(--paper);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  box-shadow: var(--shadow);
+}
+@media (min-width: 500px){
+  body{ padding: 28px 12px; align-items:flex-start; }
+  .app-frame{ min-height: 88vh; border-radius: 28px; overflow:hidden; margin-top: 12px; }
+}
+
+/* ---- header ---- */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 18px 20px 12px;
+}
+.brand{
+  font-family:'Aref Ruqaa', serif;
+  font-size: 22px;
+  color: var(--emerald);
+  display:flex; align-items:center; gap:8px;
+}
+.brand .mark{ font-size:20px; }
+.iconbtn{
+  width:38px; height:38px; border-radius:50%;
+  border:1px solid var(--line); background:var(--card);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink); font-size:16px;
+}
+
+.screen{ padding: 4px 20px 100px; flex:1; overflow-y:auto; }
+.screen h1{
+  font-family:'Fraunces', serif; font-weight:600; font-size:26px; margin: 6px 0 2px;
+}
+.eyebrow{
+  text-transform:uppercase; letter-spacing:.12em; font-size:11px;
+  color: var(--ink-soft); font-weight:600; margin-bottom:6px;
+}
+
+/* ---- cards ---- */
+.card{
+  background: var(--card); border:1px solid var(--line);
+  border-radius: var(--radius); padding:18px; margin-bottom:14px;
+}
+.card-title{ font-weight:600; font-size:14px; color:var(--ink-soft); margin-bottom:10px; letter-spacing:.02em;}
+
+.goal-ring-row{ display:flex; align-items:center; gap:16px; }
+.goal-num{ font-family:'Fraunces', serif; font-size:34px; font-weight:600; color:var(--emerald); }
+.goal-sub{ color:var(--ink-soft); font-size:13px; }
+.progress-track{ height:10px; background:var(--line); border-radius:6px; overflow:hidden; margin-top:10px;}
+.progress-fill{ height:100%; background: linear-gradient(90deg, var(--gold), var(--emerald)); border-radius:6px; transition: width .5s ease;}
+.pill{ display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; }
+.pill.done{ background:var(--emerald-soft); color:var(--emerald); }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding: 13px 18px; border-radius: 14px; border:none; cursor:pointer;
+  font-family:'Inter', sans-serif; font-weight:600; font-size:14px;
+  transition: transform .12s ease, opacity .12s ease;
+}
+.btn:active{ transform: scale(0.97); }
+.btn-primary{ background: var(--emerald); color:#fff; width:100%; }
+.btn-secondary{ background: var(--card); color:var(--ink); border:1px solid var(--line); width:100%; }
+.btn-gold{ background: var(--gold); color:#241C0B; width:100%; }
+.btn-row{ display:flex; gap:10px; }
+.btn-row .btn{ flex:1; }
+.btn-ghost{ background:transparent; color:var(--emerald); border:1px dashed var(--line); width:100%; }
+
+/* ---- tabs ---- */
+.tabbar{
+  position:sticky; bottom:0; left:0; right:0;
+  background: var(--card); border-top:1px solid var(--line);
+  display:flex; padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+}
+.tab{
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:8px 4px; border-radius:12px; cursor:pointer; color:var(--ink-soft);
+  font-size:11px; font-weight:600;
+}
+.tab.active{ color:var(--emerald); background:var(--emerald-soft); }
+.tab .ic{ font-size:18px; }
+
+/* ---- quran list ---- */
+.search-input{
+  width:100%; padding:12px 14px; border-radius:14px; border:1px solid var(--line);
+  background:var(--card); color:var(--ink); font-size:14px; margin-bottom:14px; font-family:'Inter',sans-serif;
+}
+.surah-row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 14px 4px; border-bottom:1px solid var(--line); cursor:pointer;
+}
+.surah-row:last-child{ border-bottom:none; }
+.surah-left{ display:flex; align-items:center; gap:12px; }
+.surah-num{
+  width:32px; height:32px; border-radius:50%; border:1px solid var(--gold);
+  color:var(--gold); display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; flex-shrink:0;
+}
+.surah-name-en{ font-weight:600; font-size:14px; }
+.surah-name-ar{ font-family:'Amiri', serif; font-size:15px; color:var(--ink-soft); }
+.surah-count{ font-size:11px; color:var(--ink-soft); }
+
+.ayah-block{
+  padding: 20px 4px; border-bottom:1px solid var(--line);
+}
+.ayah-arabic{
+  font-family:'Amiri', serif; font-size: 27px; line-height:2.1; text-align:right; direction:rtl;
+}
+.ayah-marker{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border:1px solid var(--gold); border-radius:50%;
+  font-family:'Inter',sans-serif; font-size:11px; color:var(--gold); margin:0 4px; vertical-align:middle;
+}
+
+/* ---- memorize ---- */
+.select-row{ display:flex; gap:10px; margin-bottom:10px; }
+select, input[type=number]{
+  width:100%; padding:12px 14px; border-radius:14px; border:1px solid var(--line);
+  background:var(--card); color:var(--ink); font-size:14px; font-family:'Inter',sans-serif;
+}
+.range-label{ font-size:12px; color:var(--ink-soft); margin-bottom:6px; display:block; font-weight:600;}
+
+.recite-stage{
+  text-align:center; padding: 30px 10px;
+}
+.mic-btn{
+  width:88px; height:88px; border-radius:50%; border:none; cursor:pointer;
+  background: var(--emerald); color:#fff; font-size:32px;
+  display:flex; align-items:center; justify-content:center; margin: 18px auto;
+  box-shadow: 0 8px 24px rgba(31,95,77,0.35);
+}
+.mic-btn.listening{
+  background: var(--rubric);
+  animation: pulse 1.4s infinite;
+}
+@keyframes pulse{
+  0%{ box-shadow: 0 0 0 0 rgba(140,58,58,0.45); }
+  70%{ box-shadow: 0 0 0 22px rgba(140,58,58,0); }
+  100%{ box-shadow: 0 0 0 0 rgba(140,58,58,0); }
+}
+.hint{ color:var(--ink-soft); font-size:13px; margin-top:6px; }
+.live-transcript{
+  font-family:'Amiri', serif; direction:rtl; font-size:20px; min-height:40px;
+  color:var(--ink-soft); margin-top:10px; padding: 0 6px;
+}
+
+.result-word{
+  font-family:'Amiri', serif; font-size:26px; display:inline-block; margin: 0 3px; position:relative;
+}
+.result-word.correct{ color:var(--ink); border-bottom:2px solid var(--emerald); }
+.result-word.wrong{ color:var(--rubric); border-bottom:2px dashed var(--rubric); }
+.result-word.missing{ color: var(--ink-soft); opacity:.55; }
+.correction-tip{
+  display:block; font-family:'Inter',sans-serif; direction:ltr; font-size:10px;
+  color:var(--rubric); text-align:center; margin-top:2px;
+}
+.ayah-result-line{ direction:rtl; text-align:right; line-height:2.6; padding:10px 4px; }
+
+.accuracy-badge{
+  display:flex; align-items:center; justify-content:center; flex-direction:column;
+  padding: 22px; text-align:center;
+}
+.accuracy-num{ font-family:'Fraunces', serif; font-size:44px; font-weight:600; }
+.accuracy-num.good{ color:var(--emerald); }
+.accuracy-num.mid{ color:var(--gold); }
+.accuracy-num.low{ color:var(--rubric); }
+
+.mistake-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 2px; border-bottom:1px solid var(--line); font-size:13px;}
+.mistake-row:last-child{ border-bottom:none; }
+.tag-missing{ color:var(--ink-soft); }
+.tag-extra{ color:var(--gold); }
+.tag-wrong{ color:var(--rubric); }
+
+.week-row{ display:flex; justify-content:space-between; margin-top:8px; }
+.day-chip{ display:flex; flex-direction:column; align-items:center; gap:6px; font-size:11px; color:var(--ink-soft); }
+.day-dot{ width:26px; height:26px; border-radius:50%; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:12px;}
+.day-dot.done{ background:var(--emerald); border-color:var(--emerald); color:#fff; }
+.day-dot.today{ border-color:var(--gold); color:var(--gold); font-weight:700; }
+
+.bar-row{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.bar-label{ width:96px; font-size:12px; font-weight:600; flex-shrink:0; }
+.bar-pct{ width:38px; text-align:right; font-size:12px; color:var(--ink-soft); flex-shrink:0; }
+
+.notice{
+  background: var(--gold-soft); color:#3A2E10; border-radius:12px; padding:10px 12px;
+  font-size:12px; margin-bottom:14px; line-height:1.5;
+}
+[data-theme="dark"] .notice{ color:#241C0B; }
+.small-link{ color:var(--emerald); font-size:12px; text-decoration:underline; cursor:pointer; background:none; border:none; font-family:'Inter',sans-serif; padding:0;}
+.empty{ text-align:center; color:var(--ink-soft); font-size:13px; padding: 24px 10px; }
+</style>
+</head>
+<body>
+<div class="app-frame" id="appFrame">
+
+  <div class="topbar">
+    <div class="brand"><span class="mark">﷽</span><span id="brandLabel">Hifz Companion</span></div>
+    <div class="iconbtn" id="themeToggle" title="Toggle theme">☾</div>
+  </div>
+
+  <div class="screen" id="screen"></div>
+
+  <div class="tabbar">
+    <div class="tab" data-tab="home"><span class="ic">⌂</span>Home</div>
+    <div class="tab" data-tab="quran"><span class="ic">﴾﴿</span>Quran</div>
+    <div class="tab" data-tab="memorize"><span class="ic">✦</span>Memorize</div>
+    <div class="tab" data-tab="progress"><span class="ic">◔</span>Progress</div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   DATA — live from Al Quran Cloud API (api.alquran.cloud)
+   Free, CORS-enabled, no key. Arabic edition: quran-uthmani.
+   Results are cached (shared storage) so the API is only
+   hit once per surah across all users of this app.
+========================================================= */
+const API_BASE = "https://api.alquran.cloud/v1";
+let SURAH_LIST = [];          // [{number, nameAr, nameEn, translationEn, numberOfAyahs, revelationType}]
+const surahTextCache = {};    // number -> { ayahs: [...arabic strings], nameEn, nameAr }
+let bootError = null;
+
+async function fetchJSON(url){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("Network error " + res.status);
+  return res.json();
+}
+
+async function loadSurahList(){
+  try{
+    const cached = await window.storage.get("surah-list-v1", true);
+    if(cached && cached.value){ SURAH_LIST = JSON.parse(cached.value); return; }
+  }catch(e){ /* not cached yet */ }
+
+  const data = await fetchJSON(`${API_BASE}/surah`);
+  SURAH_LIST = data.data.map(s => ({
+    number: s.number, nameAr: s.name, nameEn: s.englishName,
+    translationEn: s.englishNameTranslation, numberOfAyahs: s.numberOfAyahs,
+    revelationType: s.revelationType
+  }));
+  try{ await window.storage.set("surah-list-v1", JSON.stringify(SURAH_LIST), true); }catch(e){}
+}
+
+async function loadSurahText(number){
+  if(surahTextCache[number]) return surahTextCache[number];
+  try{
+    const cached = await window.storage.get("surah-text-v1:" + number, true);
+    if(cached && cached.value){ surahTextCache[number] = JSON.parse(cached.value); return surahTextCache[number]; }
+  }catch(e){ /* not cached yet */ }
+
+  const data = await fetchJSON(`${API_BASE}/surah/${number}/quran-uthmani`);
+  const entry = { ayahs: data.data.ayahs.map(a => a.text), nameEn: data.data.englishName, nameAr: data.data.name };
+  surahTextCache[number] = entry;
+  try{ await window.storage.set("surah-text-v1:" + number, JSON.stringify(entry), true); }catch(e){}
+  return entry;
+}
+
+/* =========================================================
+   STORAGE
+========================================================= */
+const STORE_KEY = "hifz-data-v1";
+let DATA = { sessions: [], goalPerDay: 5, theme: "light" };
+
+async function loadData(){
+  try{
+    const res = await window.storage.get(STORE_KEY, false);
+    if(res && res.value) DATA = JSON.parse(res.value);
+  }catch(e){ /* no data yet */ }
+  applyTheme();
+}
+async function saveData(){
+  try{ await window.storage.set(STORE_KEY, JSON.stringify(DATA), false); }catch(e){ console.error("storage save failed", e); }
+}
+
+function applyTheme(){
+  document.documentElement.setAttribute("data-theme", DATA.theme === "dark" ? "dark" : "light");
+  document.getElementById("themeToggle").textContent = DATA.theme === "dark" ? "☀" : "☾";
+}
+document.getElementById("themeToggle").onclick = () => {
+  DATA.theme = DATA.theme === "dark" ? "light" : "dark";
+  applyTheme(); saveData();
+};
+
+/* =========================================================
+   ARABIC NORMALIZATION + WORD DIFF
+========================================================= */
+function normalizeArabic(str){
+  return str
+    .replace(/[\u064B-\u0652\u0670\u06D6-\u06ED]/g, "")   // strip tashkeel/diacritics
+    .replace(/\u0640/g, "")                                 // strip tatweel
+    .replace(/[إأآا]/g, "ا")                                 // normalize alef forms
+    .replace(/ى/g, "ي")                                      // alef maksura -> ya
+    .replace(/ة/g, "ه")                                      // ta marbuta -> ha (comparison only)
+    .replace(/\s+/g, " ")
+    .trim();
+}
+function toWords(str){
+  return normalizeArabic(str).split(" ").filter(w => w.length > 0);
+}
+
+// Word-level edit-distance alignment (Wagner-Fischer with backtrace)
+function alignWords(expected, recognized){
+  const n = expected.length, m = recognized.length;
+  const dp = Array.from({length:n+1}, () => new Array(m+1).fill(0));
+  for(let i=0;i<=n;i++) dp[i][0]=i;
+  for(let j=0;j<=m;j++) dp[0][j]=j;
+  for(let i=1;i<=n;i++){
+    for(let j=1;j<=m;j++){
+      if(expected[i-1] === recognized[j-1]) dp[i][j] = dp[i-1][j-1];
+      else dp[i][j] = 1 + Math.min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]);
+    }
+  }
+  // backtrace
+  let i=n, j=m; const ops = [];
+  while(i>0 || j>0){
+    if(i>0 && j>0 && expected[i-1]===recognized[j-1] && dp[i][j]===dp[i-1][j-1]){
+      ops.unshift({type:"correct", word: expected[i-1]}); i--; j--;
+    } else if(i>0 && j>0 && dp[i][j] === dp[i-1][j-1]+1){
+      ops.unshift({type:"wrong", expected: expected[i-1], said: recognized[j-1]}); i--; j--;
+    } else if(i>0 && dp[i][j] === dp[i-1][j]+1){
+      ops.unshift({type:"missing", expected: expected[i-1]}); i--;
+    } else {
+      ops.unshift({type:"extra", said: recognized[j-1]}); j--;
+    }
+  }
+  return ops;
+}
+
+/* =========================================================
+   ROUTER / STATE
+========================================================= */
+let state = {
+  tab: "home",
+  quranSurah: 1,
+  quranSearch: "",
+  quranMode: "list",
+  memSurah: 1, memFrom: 1, memTo: 3,
+  mode: "setup", // setup | reciting | result
+  liveText: "",
+  lastOps: null,
+  recognizing: false,
+  reviewQueue: null,
+  booted: false
+};
+
+function surahMeta(number){ return SURAH_LIST.find(s => s.number === number); }
+
+const screenEl = document.getElementById("screen");
+
+function setTab(tab){
+  state.tab = tab;
+  state.mode = "setup";
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab===tab));
+  render();
+}
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => setTab(t.dataset.tab));
+
+/* =========================================================
+   DERIVED STATS
+========================================================= */
+function totalAyahsInSurah(id){ const m = surahMeta(id); return m ? m.numberOfAyahs : 0; }
+
+function surahAccuracyMap(id){
+  // best accuracy seen per ayah index for this surah
+  const map = {};
+  DATA.sessions.filter(s => s.surahId === id).forEach(s => {
+    s.ayahResults.forEach((acc, idx) => {
+      const ayahNum = s.from + idx;
+      map[ayahNum] = Math.max(map[ayahNum] || 0, acc);
+    });
+  });
+  return map;
+}
+function surahMemPercent(id){
+  const total = totalAyahsInSurah(id);
+  const map = surahAccuracyMap(id);
+  let memorized = 0;
+  for(let a=1; a<=total; a++){ if((map[a]||0) >= 90) memorized++; }
+  return Math.round((memorized/total)*100);
+}
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function ayahsPracticedToday(){
+  let count = 0;
+  DATA.sessions.filter(s => s.date === todayStr()).forEach(s => count += s.ayahResults.length);
+  return count;
+}
+function last7DaysDots(){
+  const days = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const ds = d.toISOString().slice(0,10);
+    const label = d.toLocaleDateString(undefined,{weekday:'short'}).slice(0,1);
+    const practiced = DATA.sessions.some(s => s.date === ds);
+    days.push({ label, done: practiced, isToday: ds === todayStr() });
+  }
+  return days;
+}
+function overallAccuracy(){
+  if(DATA.sessions.length===0) return null;
+  let sum=0, count=0;
+  DATA.sessions.forEach(s => s.ayahResults.forEach(a => { sum+=a; count++; }));
+  return count ? Math.round(sum/count) : null;
+}
+function practicedSurahIds(){
+  return [...new Set(DATA.sessions.map(s => s.surahId))];
+}
+function weakestAyahs(limit){
+  const all = [];
+  practicedSurahIds().forEach(id => {
+    const map = surahAccuracyMap(id);
+    Object.keys(map).forEach(ayahNum => {
+      all.push({ surahId: id, ayahNum: parseInt(ayahNum), acc: map[ayahNum] });
+    });
+  });
+  all.sort((a,b) => a.acc - b.acc);
+  return all.slice(0, limit);
+}
+
+/* =========================================================
+   RENDER: HOME
+========================================================= */
+function renderHome(){
+  const pct = Math.min(100, Math.round((ayahsPracticedToday()/DATA.goalPerDay)*100));
+  const done = ayahsPracticedToday() >= DATA.goalPerDay;
+  const dots = last7DaysDots();
+  const acc = overallAccuracy();
+
+  screenEl.innerHTML = `
+    <div class="eyebrow">Assalamu Alaikum</div>
+    <h1>Let's continue your hifz</h1>
+
+    <div class="card">
+      <div class="card-title">Today's goal</div>
+      <div class="goal-ring-row">
+        <div>
+          <div class="goal-num">${ayahsPracticedToday()}/${DATA.goalPerDay}</div>
+          <div class="goal-sub">ayahs practiced today</div>
+        </div>
+        ${done ? '<span class="pill done">✓ Complete</span>' : ''}
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div style="margin-top:12px; display:flex; align-items:center; gap:8px;">
+        <span class="range-label" style="margin:0;">Daily goal:</span>
+        <select id="goalSelect" style="width:auto; padding:6px 10px;">
+          ${[3,5,7,10].map(n => `<option value="${n}" ${DATA.goalPerDay===n?'selected':''}>${n} ayahs/day</option>`).join("")}
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">This week</div>
+      <div class="week-row">
+        ${dots.map(d => `<div class="day-chip"><div class="day-dot ${d.done?'done':''} ${d.isToday?'today':''}">${d.done?'✓':''}</div>${d.label}</div>`).join("")}
+      </div>
+    </div>
+
+    ${acc!==null ? `
+    <div class="card">
+      <div class="card-title">Recitation accuracy (all-time)</div>
+      <div class="goal-num" style="font-size:28px;">${acc}%</div>
+    </div>` : ""}
+
+    <button class="btn btn-primary" id="continueMemBtn">Start memorizing</button>
+    <div style="height:10px;"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="quickReview">Review weak ayahs</button>
+    </div>
+  `;
+
+  document.getElementById("goalSelect").onchange = (e) => {
+    DATA.goalPerDay = parseInt(e.target.value); saveData(); render();
+  };
+  document.getElementById("continueMemBtn").onclick = () => setTab("memorize");
+  document.getElementById("quickReview").onclick = () => { startReview(); };
+}
+
+/* =========================================================
+   RENDER: QURAN
+========================================================= */
+function renderQuranList(){
+  const q = state.quranSearch.trim().toLowerCase();
+  const list = SURAH_LIST.filter(s =>
+    !q || s.nameEn.toLowerCase().includes(q) || s.translationEn.toLowerCase().includes(q) || String(s.number)===q
+  );
+  screenEl.innerHTML = `
+    <div class="eyebrow">Mushaf</div>
+    <h1>Qur'an</h1>
+    <div class="notice">Full 114-surah Uthmani text, loaded live from the Al Quran Cloud API.</div>
+    <input class="search-input" id="quranSearch" placeholder="Search surah name…" value="${state.quranSearch}">
+    <div class="card" style="padding:8px 14px;">
+      ${list.length ? list.map(s => `
+        <div class="surah-row" data-id="${s.number}">
+          <div class="surah-left">
+            <div class="surah-num">${s.number}</div>
+            <div>
+              <div class="surah-name-en">${s.nameEn}</div>
+              <div class="surah-count">${s.numberOfAyahs} ayahs · ${s.revelationType}</div>
+            </div>
+          </div>
+          <div class="surah-name-ar">${s.nameAr}</div>
+        </div>
+      `).join("") : `<div class="empty">No surah matches “${state.quranSearch}”.</div>`}
+    </div>
+  `;
+  document.getElementById("quranSearch").oninput = (e) => { state.quranSearch = e.target.value; renderQuranList(); };
+  document.querySelectorAll(".surah-row").forEach(row => {
+    row.onclick = () => { state.quranSurah = parseInt(row.dataset.id); state.quranMode="detail"; renderQuranDetail(); };
+  });
+}
+
+async function renderQuranDetail(){
+  const meta = surahMeta(state.quranSurah);
+  screenEl.innerHTML = `
+    <div class="eyebrow"><button class="small-link" id="backBtn">← All surahs</button></div>
+    <h1>${meta.nameEn} <span style="color:var(--ink-soft); font-weight:400;">· ${meta.translationEn}</span></h1>
+    <div class="card"><div class="empty">Loading ${meta.nameEn}…</div></div>
+  `;
+  document.getElementById("backBtn").onclick = () => { state.quranMode="list"; renderQuranList(); };
+
+  try{
+    const surah = await loadSurahText(state.quranSurah);
+    if(state.tab !== "quran" || state.quranSurah !== meta.number) return; // navigated away
+    screenEl.querySelector(".card").innerHTML = surah.ayahs.map((a,idx) => `
+      <div class="ayah-block">
+        <div class="ayah-arabic">${a}<span class="ayah-marker">${idx+1}</span></div>
+      </div>
+    `).join("");
+  }catch(e){
+    screenEl.querySelector(".card").innerHTML = `<div class="empty">Couldn't load this surah — check your connection and <button class="small-link" id="retrySurah">try again</button>.</div>`;
+    const retry = document.getElementById("retrySurah");
+    if(retry) retry.onclick = () => renderQuranDetail();
+  }
+}
+
+function renderQuran(){
+  if(state.quranMode === "detail") renderQuranDetail();
+  else renderQuranList();
+}
+
+/* =========================================================
+   RENDER: MEMORIZE
+========================================================= */
+let recognition = null;
+let finalTranscriptChunks = [];
+
+function speechSupported(){
+  return ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
+}
+
+function renderMemorizeSetup(){
+  const meta = surahMeta(state.memSurah);
+  const max = meta.numberOfAyahs;
+  if(state.memFrom > max) state.memFrom = 1;
+  if(state.memTo > max) state.memTo = max;
+
+  screenEl.innerHTML = `
+    <div class="eyebrow">Memorization</div>
+    <h1>Recite from memory</h1>
+
+    ${!speechSupported() ? `<div class="notice">Your browser doesn't expose live speech recognition (this is common on iOS Safari or inside embedded views). You can still test the mistake-checker below by typing what was recited instead of speaking it.</div>` : ""}
+
+    <div class="card">
+      <span class="range-label">Surah</span>
+      <select id="surahSelect">
+        ${SURAH_LIST.map(s => `<option value="${s.number}" ${s.number===state.memSurah?'selected':''}>${s.number}. ${s.nameEn} (${s.numberOfAyahs} ayahs)</option>`).join("")}
+      </select>
+      <div class="select-row" style="margin-top:12px;">
+        <div style="flex:1;">
+          <span class="range-label">From ayah</span>
+          <input type="number" id="fromInput" min="1" max="${max}" value="${state.memFrom}">
+        </div>
+        <div style="flex:1;">
+          <span class="range-label">To ayah</span>
+          <input type="number" id="toInput" min="1" max="${max}" value="${state.memTo}">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="startBtn">Start</button>
+    <div id="startError"></div>
+
+    <div class="card-title" style="margin-top:22px;">Your progress in this surah</div>
+    <div class="card">
+      <div class="progress-track"><div class="progress-fill" style="width:${surahMemPercent(state.memSurah)}%"></div></div>
+      <div class="goal-sub" style="margin-top:8px;">${surahMemPercent(state.memSurah)}% memorized</div>
+    </div>
+
+    <button class="btn btn-ghost" id="reviewBtn">Review weak ayahs instead</button>
+  `;
+
+  document.getElementById("surahSelect").onchange = (e) => {
+    state.memSurah = parseInt(e.target.value); state.memFrom=1;
+    state.memTo=Math.min(3, surahMeta(state.memSurah).numberOfAyahs);
+    renderMemorizeSetup();
+  };
+  document.getElementById("fromInput").onchange = (e) => { state.memFrom = Math.max(1, parseInt(e.target.value)||1); };
+  document.getElementById("toInput").onchange = (e) => { state.memTo = Math.min(max, parseInt(e.target.value)||max); };
+  document.getElementById("startBtn").onclick = async () => {
+    if(state.memFrom > state.memTo){ alert("'From ayah' should be less than or equal to 'To ayah'."); return; }
+    const btn = document.getElementById("startBtn");
+    btn.textContent = "Loading…"; btn.disabled = true;
+    try{
+      await loadSurahText(state.memSurah); // ensure text is cached before hiding it
+      state.mode = "reciting"; state.liveText=""; state.reviewQueue=null;
+      render();
+    }catch(e){
+      document.getElementById("startError").innerHTML = `<div class="notice">Couldn't load this surah — check your connection and try again.</div>`;
+      btn.textContent = "Start"; btn.disabled = false;
+    }
+  };
+  document.getElementById("reviewBtn").onclick = startReview;
+}
+
+async function getExpectedText(surahId, from, to){
+  const surah = await loadSurahText(surahId);
+  return surah.ayahs.slice(from-1, to);
+}
+
+function renderReciting(){
+  const isReview = !!state.reviewQueue;
+  const surahId = isReview ? state.reviewQueue.surahId : state.memSurah;
+  const from = isReview ? state.reviewQueue.ayahNum : state.memFrom;
+  const to = isReview ? state.reviewQueue.ayahNum : state.memTo;
+  const meta = surahMeta(surahId);
+
+  screenEl.innerHTML = `
+    <div class="eyebrow">${isReview ? "Review" : "Memorization"}</div>
+    <h1>${meta.nameEn} · ${from===to? `Ayah ${from}` : `Ayahs ${from}–${to}`}</h1>
+    <div class="card recite-stage">
+      <div class="goal-sub">Recitation hidden — recite from memory</div>
+      <button class="mic-btn" id="micBtn">${speechSupported() ? "🎙" : "⌨"}</button>
+      <div class="hint" id="micHint">${speechSupported() ? "Tap to start, tap again when you're done" : "Tap to type what you recited"}</div>
+      <div class="live-transcript" id="liveTranscript"></div>
+    </div>
+    <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+  `;
+
+  document.getElementById("cancelBtn").onclick = () => { stopRecognitionIfAny(); state.mode="setup"; render(); };
+
+  const micBtn = document.getElementById("micBtn");
+  if(speechSupported()){
+    micBtn.onclick = () => {
+      if(!state.recognizing) startListening(surahId, from, to);
+      else stopListening(surahId, from, to);
+    };
+  } else {
+    micBtn.onclick = () => {
+      const typed = prompt("Type what was recited (Arabic):", "");
+      if(typed !== null){
+        finishAttempt(surahId, from, to, typed);
+      }
+    };
+  }
+}
+
+function startListening(surahId, from, to){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = "ar-SA";
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  finalTranscriptChunks = [];
+
+  recognition.onresult = (event) => {
+    let interim = "";
+    for(let i = event.resultIndex; i < event.results.length; i++){
+      const transcript = event.results[i][0].transcript;
+      if(event.results[i].isFinal) finalTranscriptChunks.push(transcript);
+      else interim += transcript;
+    }
+    document.getElementById("liveTranscript").textContent = (finalTranscriptChunks.join(" ") + " " + interim).trim();
+  };
+  recognition.onerror = (e) => {
+    console.error("speech recognition error", e.error);
+    document.getElementById("micHint").textContent = "Mic error (" + e.error + ") — try again or use a supported browser.";
+    state.recognizing = false;
+    document.getElementById("micBtn").classList.remove("listening");
+  };
+  recognition.onend = () => {
+    state.recognizing = false;
+  };
+
+  recognition.start();
+  state.recognizing = true;
+  document.getElementById("micBtn").classList.add("listening");
+  document.getElementById("micHint").textContent = "Listening… tap again when finished";
+}
+
+function stopListening(surahId, from, to){
+  if(recognition){ recognition.stop(); }
+  state.recognizing = false;
+  const said = finalTranscriptChunks.join(" ").trim() || document.getElementById("liveTranscript").textContent.trim();
+  finishAttempt(surahId, from, to, said);
+}
+function stopRecognitionIfAny(){
+  if(recognition && state.recognizing){ recognition.stop(); state.recognizing=false; }
+}
+
+async function finishAttempt(surahId, from, to, saidText){
+  const expectedAyahs = await getExpectedText(surahId, from, to);
+  const expectedFull = expectedAyahs.join(" ");
+  const expectedWords = toWords(expectedFull);
+  const saidWords = toWords(saidText || "");
+
+  const ops = alignWords(expectedWords, saidWords);
+
+  // split ops back per-ayah using cumulative expected word counts
+  const perAyahWordCounts = expectedAyahs.map(a => toWords(a).length);
+  const ayahResults = [];
+  let wIdx = 0, opIdx = 0;
+  for(let a=0; a<perAyahWordCounts.length; a++){
+    const count = perAyahWordCounts[a];
+    let correct = 0, seen = 0;
+    // walk ops consuming exactly `count` expected-words worth
+    while(seen < count && opIdx < ops.length){
+      const op = ops[opIdx];
+      if(op.type === "extra"){ opIdx++; continue; } // extras don't consume expected words
+      if(op.type === "correct") correct++;
+      seen++; opIdx++;
+    }
+    ayahResults.push(count ? Math.round((correct/count)*100) : 100);
+  }
+
+  const totalExpected = expectedWords.length;
+  const totalCorrect = ops.filter(o => o.type==="correct").length;
+  const overallAcc = totalExpected ? Math.round((totalCorrect/totalExpected)*100) : 0;
+
+  state.lastOps = ops;
+  state.lastMeta = { surahId, from, to, accuracy: overallAcc };
+  state.mode = "result";
+
+  DATA.sessions.push({
+    date: todayStr(), timestamp: Date.now(),
+    surahId, from, to, ayahResults, accuracy: overallAcc
+  });
+  saveData();
+  render();
+}
+
+function renderResult(){
+  const { surahId, from, to, accuracy } = state.lastMeta;
+  const meta = surahMeta(surahId);
+  const ops = state.lastOps;
+  const accClass = accuracy>=90?"good":accuracy>=70?"mid":"low";
+
+  const mistakes = ops.filter(o => o.type!=="correct");
+
+  screenEl.innerHTML = `
+    <div class="eyebrow">Result</div>
+    <h1>${meta.nameEn} · ${from===to?`Ayah ${from}`:`Ayahs ${from}–${to}`}</h1>
+
+    <div class="card accuracy-badge">
+      <div class="accuracy-num ${accClass}">${accuracy}%</div>
+      <div class="goal-sub">accuracy</div>
+    </div>
+
+    <div class="card-title">Word-by-word</div>
+    <div class="card ayah-result-line">
+      ${ops.map(op => {
+        if(op.type==="correct") return `<span class="result-word correct">${op.word}</span>`;
+        if(op.type==="wrong") return `<span class="result-word wrong">${op.said}<span class="correction-tip">✓ ${op.expected}</span></span>`;
+        if(op.type==="missing") return `<span class="result-word missing">${op.expected}<span class="correction-tip">missing</span></span>`;
+        if(op.type==="extra") return `<span class="result-word wrong" style="opacity:.7;">${op.said}<span class="correction-tip">extra</span></span>`;
+      }).join("")}
+    </div>
+
+    ${mistakes.length ? `
+    <div class="card-title">Mistakes (${mistakes.length})</div>
+    <div class="card">
+      ${mistakes.map(m => {
+        if(m.type==="wrong") return `<div class="mistake-row"><span class="tag-wrong">said “${m.said}”</span><span>expected “${m.expected}”</span></div>`;
+        if(m.type==="missing") return `<div class="mistake-row"><span class="tag-missing">missing</span><span>“${m.expected}”</span></div>`;
+        if(m.type==="extra") return `<div class="mistake-row"><span class="tag-extra">extra word</span><span>“${m.said}”</span></div>`;
+      }).join("")}
+    </div>` : `<div class="notice">No mistakes detected — well recited.</div>`}
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="retryBtn">Try again</button>
+      <button class="btn btn-primary" id="doneBtn">Done</button>
+    </div>
+  `;
+  document.getElementById("retryBtn").onclick = () => { state.mode="reciting"; render(); };
+  document.getElementById("doneBtn").onclick = () => {
+    state.mode = "setup"; state.reviewQueue = null; setTab("home");
+  };
+}
+
+function startReview(){
+  const weak = weakestAyahs(10);
+  if(weak.length === 0){
+    alert("No practiced ayahs yet — memorize a few ayahs first, then Review will quiz you on the ones you find hardest.");
+    return;
+  }
+  const pick = weak[Math.floor(Math.random()*Math.min(3, weak.length))];
+  state.reviewQueue = { surahId: pick.surahId, ayahNum: pick.ayahNum };
+  state.mode = "reciting";
+  setTab("memorize");
+}
+
+function renderMemorize(){
+  if(state.mode === "setup") renderMemorizeSetup();
+  else if(state.mode === "reciting") renderReciting();
+  else if(state.mode === "result") renderResult();
+}
+
+/* =========================================================
+   RENDER: PROGRESS
+========================================================= */
+function renderProgress(){
+  const acc = overallAccuracy();
+  const practiced = practicedSurahIds();
+  screenEl.innerHTML = `
+    <div class="eyebrow">Your hifz</div>
+    <h1>Progress</h1>
+
+    <div class="card">
+      <div class="card-title">By surah</div>
+      ${practiced.length ? practiced.map(id => `
+        <div class="bar-row">
+          <div class="bar-label">${surahMeta(id) ? surahMeta(id).nameEn : "Surah " + id}</div>
+          <div class="progress-track" style="flex:1;"><div class="progress-fill" style="width:${surahMemPercent(id)}%"></div></div>
+          <div class="bar-pct">${surahMemPercent(id)}%</div>
+        </div>
+      `).join("") : `<div class="empty">Surahs you practice in Memorize will appear here.</div>`}
+    </div>
+
+    <div class="card">
+      <div class="card-title">Today</div>
+      <div class="goal-ring-row">
+        <div><div class="goal-num">${ayahsPracticedToday()}</div><div class="goal-sub">ayahs practiced</div></div>
+      </div>
+    </div>
+
+    ${acc!==null ? `
+    <div class="card">
+      <div class="card-title">Overall recitation accuracy</div>
+      <div class="goal-num" style="font-size:28px;">${acc}%</div>
+      <div class="goal-sub">across ${DATA.sessions.length} session${DATA.sessions.length===1?'':'s'}</div>
+    </div>` : `<div class="empty">Practice a few ayahs in Memorize to start seeing progress here.</div>`}
+
+    <button class="btn btn-secondary" id="resetBtn">Reset all progress</button>
+  `;
+  document.getElementById("resetBtn").onclick = async () => {
+    if(confirm("This clears all saved sessions and progress on this device. Continue?")){
+      DATA.sessions = [];
+      await saveData();
+      render();
+    }
+  };
+}
+
+/* =========================================================
+   MAIN RENDER
+========================================================= */
+function render(){
+  if(state.tab === "home") renderHome();
+  else if(state.tab === "quran") renderQuran();
+  else if(state.tab === "memorize") renderMemorize();
+  else if(state.tab === "progress") renderProgress();
+}
+
+async function boot(){
+  document.querySelector('.tab[data-tab="home"]').classList.add("active");
+  screenEl.innerHTML = `<div class="empty" style="padding-top:80px;">Loading the Qur'an index…</div>`;
+  await loadData();
+  try{
+    await loadSurahList();
+    state.booted = true;
+    render();
+  }catch(e){
+    screenEl.innerHTML = `
+      <div class="empty" style="padding-top:80px;">
+        Couldn't reach the Qur'an API — check your internet connection.<br><br>
+        <button class="btn btn-primary" id="bootRetry" style="width:auto; display:inline-flex; padding:10px 20px;">Try again</button>
+      </div>`;
+    document.getElementById("bootRetry").onclick = boot;
+  }
+}
+boot();
+</script>
+</body>
+</html>
